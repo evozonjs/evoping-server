@@ -1,10 +1,13 @@
 'use strict'
 const Project = use('App/Model/Project')
+const User = use('App/Model/User')
+const Database = use('Database')
 
 class ProjectController {
 
   * index(request, response) {
-    const projects = yield Project.all();
+    let user = yield request.auth.getUser()
+    const projects = yield user.Project().fetch()
     response.json(projects)
   }
 
@@ -16,7 +19,7 @@ class ProjectController {
   }
 
   * update(request, response) {
-    const project = yield Project.findBy('id',request.param('id'))
+    const project = yield Project.findOrFail(request.param('id'))
     project.fill(request.all())
     yield project.save()
     response.json(project)
